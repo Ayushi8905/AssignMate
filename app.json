@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "GymTrainer App",
+    "slug": "gymtrainer-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "rork-app",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "app.rork.gymtrainer-app"
+    },
+    "android": {
+      "package": "app.rork.gymtrainer_app"
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "origin": "https://rork.com/"
+        }
+      ],
+      "expo-font",
+      "expo-web-browser"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
