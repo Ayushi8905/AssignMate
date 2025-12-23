@@ -13,6 +13,11 @@ function RootLayoutNav() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
+      <Stack.Screen name="auth" />
+      <Stack.Screen name="home" />
+      <Stack.Screen name="diet" />
+      <Stack.Screen name="workout" />
+      <Stack.Screen name="reports" />
       <Stack.Screen name="welcome" />
       <Stack.Screen name="videos" />
       <Stack.Screen name="planning" />
