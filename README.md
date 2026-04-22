@@ -1,6 +1,6 @@
-# BulkkMate - Gym Trainer App
+# Assignmate - Student Assignment Tracker App
 
-A React Native fitness training app built with Expo.
+A React Native student assignment tracker app built with Expo.
 
 ## Setup
 

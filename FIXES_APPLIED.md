@@ -1,4 +1,4 @@
-# Fixes Applied to BulkkMate React Native App
+# Fixes Applied to Assignmate React Native App
 
 ## Issues Fixed
 

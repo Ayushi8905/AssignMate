@@ -46,29 +46,29 @@ export default function WelcomeScreen() {
               <Zap size={40} color="#FF6B35" fill="#FF6B35" />
             </View>
             <Text style={styles.welcomeText}>Welcome to</Text>
-            <Text style={styles.brandText}>BulkkMate!</Text>
+            <Text style={styles.brandText}>AssignMate!</Text>
             <View style={styles.divider} />
             <Text style={styles.tagline}>
-              Transform Your Body,{"\n"}Transform Your Life
+              Track Your Assignments,{"\n"}Ace Your Classes
             </Text>
             <Text style={styles.description}>
-              Your personal training companion for building strength, gaining
-              muscle, and achieving your fitness goals with expert guidance.
+              Your personal academic companion for managing tasks, tracking
+              deadlines, and achieving your educational goals with ease.
             </Text>
           </View>
 
           <View style={styles.features}>
             <View style={styles.featureItem}>
               <View style={styles.featureDot} />
-              <Text style={styles.featureText}>Professional Training Plans</Text>
+              <Text style={styles.featureText}>Smart Deadline Tracking</Text>
             </View>
             <View style={styles.featureItem}>
               <View style={styles.featureDot} />
-              <Text style={styles.featureText}>Expert Nutrition Guidance</Text>
+              <Text style={styles.featureText}>Progress Analytics</Text>
             </View>
             <View style={styles.featureItem}>
               <View style={styles.featureDot} />
-              <Text style={styles.featureText}>24/7 Support & Motivation</Text>
+              <Text style={styles.featureText}>Organized Workspaces</Text>
             </View>
           </View>
 

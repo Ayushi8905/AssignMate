@@ -48,9 +48,9 @@ export default function PlanningScreen() {
           ]}
         >
           <View style={styles.header}>
-            <Text style={styles.title}>Planning to Start?</Text>
+            <Text style={styles.title}>Ready to Organize?</Text>
             <Text style={styles.subtitle}>
-              Choose how you want to begin your fitness journey with BulkkMate
+              Choose how you want to begin managing your school work with AssignMate
             </Text>
           </View>
 
@@ -69,10 +69,10 @@ export default function PlanningScreen() {
                 <View style={styles.iconContainer}>
                   <Calendar size={48} color="#FFFFFF" strokeWidth={2} />
                 </View>
-                <Text style={styles.cardTitle}>View Plans</Text>
+                <Text style={styles.cardTitle}>View Subjects</Text>
                 <Text style={styles.cardDescription}>
-                  Explore our training packages designed to match your goals and
-                  commitment level
+                  Explore and set up your active subjects and track your pending
+                  assignments
                 </Text>
               </LinearGradient>
             </TouchableOpacity>
@@ -89,9 +89,9 @@ export default function PlanningScreen() {
                 <View style={styles.iconContainer}>
                   <FileText size={48} color="#FF6B35" strokeWidth={2} />
                 </View>
-                <Text style={styles.cardTitle}>Request Demo</Text>
+                <Text style={styles.cardTitle}>Set Reminders</Text>
                 <Text style={styles.cardDescription}>
-                  Get a free consultation and personalized training demo session
+                  Configure custom notifications to never miss an impending deadline again
                 </Text>
               </LinearGradient>
             </TouchableOpacity>
@@ -99,8 +99,8 @@ export default function PlanningScreen() {
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>
-              Not sure which option to choose? Request a demo to speak with our
-              trainers first.
+              Not sure which option to choose? Start by adding your first subject and 
+              gradually organize your schedule.
             </Text>
           </View>
         </Animated.View>

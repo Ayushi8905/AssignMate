@@ -1,4 +1,4 @@
-# Bulkkmate App Screens
+# Assignmate App Screens
 
 ## ✅ Completed Screens
 

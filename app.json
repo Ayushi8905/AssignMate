@@ -9,10 +9,10 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "app.rork.gymtrainer-app"
+      "bundleIdentifier": "app.rork.assignmate-app"
     },
     "android": {
-      "package": "app.rork.gymtrainer_app"
+      "package": "app.rork.assignmate_app"
     },
     "web": {
       "bundler": "metro"
