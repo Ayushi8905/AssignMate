@@ -39,3 +39,6 @@ yarn-error.*
 .vercel
 
 .rork
+# Fireba
+se service account key (never commit this)
+serviceAccountKey.json

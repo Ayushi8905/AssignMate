@@ -1,339 +1,168 @@
 import { useRouter } from "expo-router";
-import { Mail, Lock, User, ArrowRight } from "lucide-react-native";
+import { Mail, Lock, User, BookOpen, ArrowRight } from "lucide-react-native";
 import React, { useState, useRef, useEffect } from "react";
 import {
-  Animated,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
+  Animated, StyleSheet, Text, TextInput, TouchableOpacity,
+  View, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { BlurView } from "expo-blur";
-
-const goals = [
-  { id: "muscle", icon: "💪", label: "Muscle Gain" },
-  { id: "fat", icon: "🔥", label: "Fat Loss" },
-  { id: "strength", icon: "🏋", label: "Strength" },
-  { id: "maintenance", icon: "⚖️", label: "Maintenance" },
-];
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import { auth } from "../lib/firebase";
 
 export default function AuthScreen() {
   const router = useRouter();
   const [isSignUp, setIsSignUp] = useState(false);
-  const [selectedGoal, setSelectedGoal] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(30)).current;
+  const slideAnim = useRef(new Animated.Value(40)).current;
 
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 600,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 600,
-        useNativeDriver: true,
-      }),
+      Animated.timing(fadeAnim, { toValue: 1, duration: 700, useNativeDriver: true }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 700, useNativeDriver: true }),
     ]).start();
   }, []);
 
-  const handleSubmit = () => {
-    router.replace("/home");
+  const handleSubmit = async () => {
+    setError("");
+    if (!email.trim() || !password.trim()) { setError("Email and password are required."); return; }
+    setLoading(true);
+    try {
+      if (isSignUp) {
+        const cred = await createUserWithEmailAndPassword(auth, email.trim(), password);
+        if (name.trim()) await updateProfile(cred.user, { displayName: name.trim() });
+      } else {
+        await signInWithEmailAndPassword(auth, email.trim(), password);
+      }
+      router.replace("/home");
+    } catch (e: any) {
+      const msg = e?.code?.replace("auth/", "").replace(/-/g, " ") ?? "Something went wrong";
+      setError(msg.charAt(0).toUpperCase() + msg.slice(1));
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <View style={styles.container}>
-      <LinearGradient
-        colors={["#0B0F14", "#121820", "#0B0F14"]}
-        style={styles.gradient}
-      >
-        <SafeAreaView style={styles.safeArea}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={styles.keyboardView}
-          >
-            <ScrollView
-              contentContainerStyle={styles.scrollContent}
-              showsVerticalScrollIndicator={false}
-            >
-              <Animated.View
-                style={[
-                  styles.content,
-                  {
-                    opacity: fadeAnim,
-                    transform: [{ translateY: slideAnim }],
-                  },
-                ]}
-              >
-                {/* Glass Card */}
-                <View style={styles.card}>
-                  <BlurView intensity={20} style={styles.blurCard}>
-                    <Text style={styles.title}>
-                      {isSignUp ? "START YOUR JOURNEY" : "WELCOME BACK"}
-                    </Text>
+    <LinearGradient colors={["#0F1117", "#1A1D2E", "#0F1117"]} style={styles.container}>
+      <View style={styles.bgCircle1} />
+      <View style={styles.bgCircle2} />
+      <SafeAreaView style={styles.safe}>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+          <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+            <Animated.View style={[styles.inner, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+              {/* Logo */}
+              <View style={styles.logoRow}>
+                <LinearGradient colors={["#4F8EF7", "#7C5CBF"]} style={styles.logoCircle}>
+                  <BookOpen size={28} color="#FFF" strokeWidth={1.5} />
+                </LinearGradient>
+                <Text style={styles.logoText}>AssignMate</Text>
+              </View>
 
-                    {/* Input Fields */}
-                    <View style={styles.inputsContainer}>
-                      {isSignUp && (
-                        <View style={styles.inputWrapper}>
-                          <User size={20} color="#FF6B35" style={styles.inputIcon} />
-                          <TextInput
-                            style={styles.input}
-                            placeholder="Full Name"
-                            placeholderTextColor="#666"
-                          />
-                        </View>
-                      )}
+              {/* Card */}
+              <View style={styles.card}>
+                <Text style={styles.title}>{isSignUp ? "Create Account" : "Welcome Back"}</Text>
+                <Text style={styles.subtitle}>
+                  {isSignUp ? "Start managing your assignments" : "Sign in to your account"}
+                </Text>
 
-                      <View style={styles.inputWrapper}>
-                        <Mail size={20} color="#FF6B35" style={styles.inputIcon} />
-                        <TextInput
-                          style={styles.input}
-                          placeholder="Email / Username"
-                          placeholderTextColor="#666"
-                          keyboardType="email-address"
-                          autoCapitalize="none"
-                        />
-                      </View>
-
-                      <View style={styles.inputWrapper}>
-                        <Lock size={20} color="#FF6B35" style={styles.inputIcon} />
-                        <TextInput
-                          style={styles.input}
-                          placeholder="Password"
-                          placeholderTextColor="#666"
-                          secureTextEntry
-                        />
-                      </View>
+                <View style={styles.inputs}>
+                  {isSignUp && (
+                    <View style={styles.inputRow}>
+                      <User size={18} color="#4F8EF7" />
+                      <TextInput style={styles.input} placeholder="Full Name" placeholderTextColor="#4A5568"
+                        value={name} onChangeText={setName} />
                     </View>
-
-                    {/* Goal Selector for Sign Up */}
-                    {isSignUp && (
-                      <View style={styles.goalsContainer}>
-                        <Text style={styles.goalsTitle}>SELECT YOUR GOAL</Text>
-                        <View style={styles.goalsGrid}>
-                          {goals.map((goal) => (
-                            <TouchableOpacity
-                              key={goal.id}
-                              style={[
-                                styles.goalCard,
-                                selectedGoal === goal.id && styles.goalCardSelected,
-                              ]}
-                              onPress={() => setSelectedGoal(goal.id)}
-                              activeOpacity={0.7}
-                            >
-                              <Text style={styles.goalIcon}>{goal.icon}</Text>
-                              <Text style={styles.goalLabel}>{goal.label}</Text>
-                            </TouchableOpacity>
-                          ))}
-                        </View>
-                      </View>
-                    )}
-
-                    {/* Submit Button */}
-                    <TouchableOpacity
-                      style={styles.submitButton}
-                      onPress={handleSubmit}
-                      activeOpacity={0.8}
-                    >
-                      <LinearGradient
-                        colors={["#00FF88", "#00D9FF"]}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        style={styles.buttonGradient}
-                      >
-                        <View style={styles.buttonContent}>
-                          <Text style={styles.buttonText}>
-                            {isSignUp ? "START MY TRANSFORMATION" : "SIGN IN"}
-                          </Text>
-                          <ArrowRight size={20} color="#0B0F14" strokeWidth={3} />
-                        </View>
-                      </LinearGradient>
-                    </TouchableOpacity>
-
-                    {/* Motivation Text */}
-                    <Text style={styles.motivationText}>
-                      Consistency beats motivation.
-                    </Text>
-
-                    {/* Toggle Sign In/Sign Up */}
-                    <TouchableOpacity
-                      onPress={() => setIsSignUp(!isSignUp)}
-                      style={styles.toggleButton}
-                    >
-                      <Text style={styles.toggleText}>
-                        {isSignUp
-                          ? "Already have an account? Sign In"
-                          : "New to Bulkkmate? Start your journey"}
-                      </Text>
-                    </TouchableOpacity>
-                  </BlurView>
+                  )}
+                  <View style={styles.inputRow}>
+                    <Mail size={18} color="#4F8EF7" />
+                    <TextInput style={styles.input} placeholder="Email address" placeholderTextColor="#4A5568"
+                      keyboardType="email-address" autoCapitalize="none"
+                      value={email} onChangeText={setEmail} />
+                  </View>
+                  <View style={styles.inputRow}>
+                    <Lock size={18} color="#4F8EF7" />
+                    <TextInput style={styles.input} placeholder="Password" placeholderTextColor="#4A5568"
+                      secureTextEntry value={password} onChangeText={setPassword} />
+                  </View>
                 </View>
-              </Animated.View>
-            </ScrollView>
-          </KeyboardAvoidingView>
-        </SafeAreaView>
-      </LinearGradient>
-    </View>
+
+                {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+                <TouchableOpacity onPress={handleSubmit} activeOpacity={0.85} disabled={loading}>
+                  <LinearGradient colors={["#4F8EF7", "#7C5CBF"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.btn}>
+                    {loading
+                      ? <ActivityIndicator color="#FFF" />
+                      : <>
+                          <Text style={styles.btnText}>{isSignUp ? "Get Started" : "Sign In"}</Text>
+                          <ArrowRight size={18} color="#FFF" strokeWidth={2.5} />
+                        </>
+                    }
+                  </LinearGradient>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => { setIsSignUp(!isSignUp); setError(""); }} style={styles.toggle}>
+                  <Text style={styles.toggleText}>
+                    {isSignUp ? "Already have an account? " : "Don't have an account? "}
+                    <Text style={styles.toggleLink}>{isSignUp ? "Sign In" : "Register"}</Text>
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </Animated.View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  container: { flex: 1 },
+  safe: { flex: 1 },
+  scroll: { flexGrow: 1, justifyContent: "center", padding: 24 },
+  inner: { alignItems: "center" },
+  bgCircle1: {
+    position: "absolute", width: 350, height: 350, borderRadius: 175,
+    backgroundColor: "rgba(79, 142, 247, 0.07)", top: -60, right: -80,
   },
-  gradient: {
-    flex: 1,
+  bgCircle2: {
+    position: "absolute", width: 280, height: 280, borderRadius: 140,
+    backgroundColor: "rgba(124, 92, 191, 0.07)", bottom: -40, left: -60,
   },
-  safeArea: {
-    flex: 1,
-  },
-  keyboardView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: "center",
-    paddingVertical: 40,
-  },
-  content: {
-    paddingHorizontal: 24,
-  },
+  logoRow: { flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 36 },
+  logoCircle: { width: 48, height: 48, borderRadius: 14, alignItems: "center", justifyContent: "center" },
+  logoText: { fontSize: 26, fontWeight: "800", color: "#FFF", letterSpacing: 0.5 },
   card: {
-    borderRadius: 24,
-    overflow: "hidden",
-    borderWidth: 1,
-    borderColor: "rgba(0, 255, 136, 0.3)",
-    shadowColor: "#00FF88",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 20,
+    width: "100%", backgroundColor: "rgba(26, 29, 46, 0.95)",
+    borderRadius: 24, padding: 28, borderWidth: 1,
+    borderColor: "rgba(79, 142, 247, 0.2)",
   },
-  blurCard: {
-    padding: 32,
-    backgroundColor: "rgba(26, 26, 26, 0.8)",
+  title: { fontSize: 24, fontWeight: "800", color: "#FFF", marginBottom: 6 },
+  subtitle: { fontSize: 14, color: "#A0AEC0", marginBottom: 28 },
+  inputs: { gap: 14, marginBottom: 16 },
+  inputRow: {
+    flexDirection: "row", alignItems: "center", gap: 12,
+    backgroundColor: "rgba(255,255,255,0.04)", borderRadius: 12,
+    borderWidth: 1, borderColor: "rgba(79, 142, 247, 0.2)",
+    paddingHorizontal: 16, height: 52,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "900",
-    color: "#FFFFFF",
-    textAlign: "center",
-    letterSpacing: 2,
-    marginBottom: 32,
+  input: { flex: 1, color: "#FFF", fontSize: 15 },
+  errorText: { fontSize: 13, color: "#EF4444", marginBottom: 12, textAlign: "center" },
+  btn: {
+    flexDirection: "row", alignItems: "center", justifyContent: "center",
+    gap: 8, borderRadius: 14, paddingVertical: 16, marginBottom: 4,
   },
-  inputsContainer: {
-    gap: 16,
-    marginBottom: 24,
-  },
-  inputWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "rgba(0, 255, 136, 0.3)",
-    paddingHorizontal: 16,
-    height: 56,
-  },
-  inputIcon: {
-    marginRight: 12,
-    color: "#00FF88",
-  },
-  input: {
-    flex: 1,
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "500",
-  },
-  goalsContainer: {
-    marginBottom: 24,
-  },
-  goalsTitle: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#00FF88",
-    letterSpacing: 1,
-    marginBottom: 16,
-    textAlign: "center",
-  },
-  goalsGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-  },
-  goalCard: {
-    flex: 1,
-    minWidth: "45%",
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: "rgba(0, 255, 136, 0.2)",
-    padding: 16,
-    alignItems: "center",
-    gap: 8,
-  },
-  goalCardSelected: {
-    backgroundColor: "rgba(0, 255, 136, 0.2)",
-    borderColor: "#00FF88",
-  },
-  goalIcon: {
-    fontSize: 32,
-  },
-  goalLabel: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#FFFFFF",
-    textAlign: "center",
-  },
-  submitButton: {
-    borderRadius: 12,
-    overflow: "hidden",
-    marginBottom: 16,
-    shadowColor: "#00FF88",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  buttonGradient: {
-    paddingVertical: 18,
-    paddingHorizontal: 24,
-  },
-  buttonContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: "800",
-    color: "#0B0F14",
-    letterSpacing: 1,
-  },
-  motivationText: {
-    fontSize: 13,
-    fontWeight: "500",
-    color: "#999",
-    textAlign: "center",
-    fontStyle: "italic",
-    marginBottom: 16,
-  },
-  toggleButton: {
-    paddingVertical: 8,
-  },
-  toggleText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#00FF88",
-    textAlign: "center",
-  },
+  btnText: { fontSize: 16, fontWeight: "700", color: "#FFF" },
+  toggle: { marginTop: 20, alignItems: "center" },
+  toggleText: { fontSize: 14, color: "#A0AEC0" },
+  toggleLink: { color: "#4F8EF7", fontWeight: "700" },
 });
