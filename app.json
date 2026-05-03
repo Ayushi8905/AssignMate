@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "scheme": "rork-app",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "app.rork.assignmate-app"
@@ -29,6 +29,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": "https://rork.com/"
+      },
+      "eas": {
+        "projectId": "766720b7-c83b-4bc5-b79b-74770421ff91"
+      }
     }
   }
 }
